@@ -36,8 +36,9 @@ Steps to create:
 // dependencies
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const consoletable = require("console.table");
 
-let connection = mysql.createConnection({
+const connection = mysql.createConnection({
     host: "localhost",
 
     port: 3306,
