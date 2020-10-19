@@ -43,9 +43,9 @@ const connection = mysql.createConnection({
 
     port: 3306,
 
-    user: "root",
+    user: "jerrifong",
 
-    password: "codIng9!",
+    password: "mepassword",
     database: "employeeMgmt_DB"
 });
 
@@ -60,26 +60,43 @@ function begin() {
         type: "list",
         name: "action",
         message: "What would you like to do?",
-        choices: ["View All Employees", "View All Employees by Department", "View All Employees by Manager", "Add Employee", "Remove Employee", "Update Employee Role", "Update Employee Manager", "View All Roles"]
+        choices: ["View All Employees", "View All Employees by Department", "View All Employees by Manager", "Add Employee", "Add Department", "Add Role", "Remove Employee", "Update Employee Role", "Update Employee Manager", "View All Roles", "Quit"]
     }]).then(function(data) {
-
-        if (data.action === "View All Employees") {
-            employeesTable();
-        } else if (data.action === "View All Employees by Department") {
-            employeesDeptTable();
-        } else if (data.action === "View All Employees by Manager") {
-            employeesManagerTable();
-        } else if (data.action === "Add Employee") {
-            addEmployee();
-        } else if (data.action === "Remove Employee") {
-            removeEmployee();
-        } else if (data.action === "Update Employee Role") {
-            updateRole();
-        } else if (data.action === "Update Employee Manager") {
-            updateManager();
-        } else if (data.action === "View All Roles") {
-            rolesTable();
-        }
+        switch (data.action) {
+            case "View All Employees":
+                employeesTable();
+                break;
+            case "View All Employees by Department":
+                employeesDeptTable();
+                break;
+            case "View All Employees by Manager":
+                employeesManagerTable();
+                break;
+            case "Add Employee":
+                addEmployee();
+                break;
+            case "Add Department":
+                addDepartment();
+                break;
+            case "Add Role":
+                addRole();
+                break;
+            case "Remove Employee":
+                removeEmployee();
+                break;
+            case "Update Employee Role":
+                updateRole();
+                break;
+            case "Update Employee Manager":
+                updateManager();
+                break;
+            case "View All Roles":
+                rolesTable();
+                break;
+            case "Quit":
+                console.log("Bye bye!")
+                connection.end();
+        };
     });
 };
 
