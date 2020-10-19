@@ -34,10 +34,10 @@ Steps to create:
 */
 
 // dependencies
-const sql = require("mysql");
+const mysql = require("mysql");
 const inquirer = require("inquirer");
 
-const connection = mysql.createConnection({
+let connection = mysql.createConnection({
     host: "localhost",
 
     port: 3306,
@@ -50,4 +50,38 @@ const connection = mysql.createConnection({
 
 connection.connect(function(err) {
     if (err) throw err;
+    begin();
 });
+
+function begin() {
+    inquirer.prompt([{
+        type: "list",
+        name: "action",
+        message: "What would you like to do?",
+        choices: ["View All Employees", "View All Employees by Department", "View All Employees by Manager", "Add Employee", "Remove Employee", "Update Employee Role", "Update Employee Manager", "View All Roles"]
+    }]).then(function(data) {
+
+        if (data.action === "View All Employees") {
+            employeesTable();
+        } else if (data.action === "View All Employees by Department") {
+            employeesDeptTable();
+        } else if (data.action === "View All Employees by Manager") {
+            employeesManagerTable();
+        }
+
+
+
+    });
+};
+
+function employeesTable() {
+    console.log("test if it works");
+};
+
+function employeesDeptTable() {
+    console.log("table for department");
+};
+
+function employeesManagerTable() {
+    console.log("table for managers");
+};
