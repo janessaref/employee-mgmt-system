@@ -67,10 +67,17 @@ function begin() {
             employeesDeptTable();
         } else if (data.action === "View All Employees by Manager") {
             employeesManagerTable();
+        } else if (data.action === "Add Employee") {
+            addEmployee();
+        } else if (data.action === "Remove Employee") {
+            removeEmployee();
+        } else if (data.action === "Update Employee Role") {
+            updateRole();
+        } else if (data.action === "Update Employee Manager") {
+            updateManager();
+        } else if (data.action === "View All Roles") {
+            rolesTable();
         }
-
-
-
     });
 };
 
@@ -84,4 +91,43 @@ function employeesDeptTable() {
 
 function employeesManagerTable() {
     console.log("table for managers");
+};
+
+function addEmployee() {
+    inquirer.prompt([{
+            type: "input",
+            name: "firstname",
+            message: "What is the employee's first name?",
+        },
+        {
+            type: "input",
+            name: "lastname",
+            message: "What is the employee's last name?",
+        },
+        {
+            type: "input",
+            name: "role",
+            message: "What is the employee's role?",
+        },
+        {
+            type: "input",
+            name: "manager",
+            message: "What is the employee's manager?",
+        },
+    ]).then(function(data) {
+        connection.query(
+            "INSERT INTO employees SET ?", {
+                first_name: data.firstname,
+                last_name: data.lastname,
+                role_id: data.role,
+                manager_id: data.manager,
+            },
+            function(err, res) {
+                if (err) throw err;
+                console.log(`Added ${res.first_name} ${res.last_name} to the database`);
+                // re-prompt the user the first prompt
+                begin();
+            },
+        );
+    });
 };
