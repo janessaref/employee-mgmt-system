@@ -127,7 +127,19 @@ function employeesTable() {
 };
 
 function employeesDeptTable() {
-    console.log("table for department");
+    connection.query(
+        `
+        SELECT 
+            id,
+            department_name AS Department
+
+        FROM departments
+        `,
+        function(err, res) {
+            if (err) throw err;
+            console.table(res);
+            return res;
+        })
 };
 
 function employeesManagerTable() {
