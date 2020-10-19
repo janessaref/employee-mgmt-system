@@ -1,28 +1,27 @@
-DROP DATABASE IF EXISTS employeeMgmt_DB;
-CREATE DATABASE employeeMgmt_DB;
-
 USE employeeMgmt_DB;
 
-CREATE TABLE departments(
-  id INT NOT NULL AUTO_INCREMENT,
-  department_name VARCHAR(30) NOT NULL,
-  PRIMARY KEY (id)
-);
+INSERT INTO departments (department_name)
+VALUES 
+    ("Engineering"),
+    ("Legal"),
+    ("Finance"),
+    ("Sales");
 
-CREATE TABLE roles(
-  id INT NOT NULL AUTO_INCREMENT,
-  title VARCHAR(30) NOT NULL,
-  salary DECIMAL(19,2) NOT NULL,
-  department_id INT NOT NULL,
-  PRIMARY KEY (id)
-);
+INSERT INTO roles (title, salary, department_id)
+VALUES 
+    ("Sales Lead", 100000, 4),
+    ("Salesperson", 80000, 4),
+    ("Lead Engineer", 150000, 1),
+    ("Software Engineer", 120000, 1),
+    ("Accountant", 125000, 3),
+    ("Accounts Manager", 200000, 3),
+    ("Legal Team Lead", 250000, 2),
+    ("Lawyer", 190000, 2);
 
-CREATE TABLE employees(
-  id INT NOT NULL AUTO_INCREMENT,
-  first_name VARCHAR(30) NOT NULL,
-  last_name VARCHAR(30) NOT NULL,
-  role_id INT NOT NULL,
-  manager_id INT NOT NULL,
-  PRIMARY KEY (id)
-);
 
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
+VALUES
+    ("John", "Smith", 6, NULL),
+    ("Jane", "Doe", 5, 1),
+    ("John", "Rogers", 7, NULL),
+    ("Ashley", "Ray", 8, 3);
