@@ -24,4 +24,10 @@ VALUES
     ("John", "Smith", 6, NULL),
     ("Jane", "Doe", 5, 1),
     ("John", "Rogers", 7, NULL),
-    ("Ashley", "Ray", 8, 3);
+    ("Ashley", "Ray", 8, 3),
+    ("Samantha", "Walker", 3,NULL),
+    ("Arya", "Parker", 4, 5),
+    ("Michael", "Hawk", 1, NULL),
+    ("Andrew","Cisco",2,7),
+    ("Hunter","Walsh", 6, NULL),
+    ("Alexander", "Ryans", 5,9);

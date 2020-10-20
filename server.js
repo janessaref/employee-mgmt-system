@@ -37,6 +37,7 @@ Steps to create:
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const consoletable = require("console.table");
+const { left } = require("inquirer/lib/utils/readline");
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -139,51 +140,110 @@ function employeesDeptTable() {
             if (err) throw err;
             console.table(res);
             return res;
-        })
+        },
+    );
 };
 
-function employeesManagerTable() {
-    console.log("table for managers");
-};
+// function employeesManagerTable() {
+//     connection.query(
+//         `SELECT 
+//             * 
+//             CONCAT(m.first_name, " ",m.last_name) AS Manager
+//         FROM employees 
+
+//         `,
+//         function(err, res) {
+//             if (err) throw err;
+//             console.table(res);
+//             return res;
+//         },
+//     );
+// };
 
 function addEmployee() {
-    inquirer.prompt([{
-            type: "input",
-            name: "firstname",
-            message: "What is the employee's first name?",
-        },
-        {
-            type: "input",
-            name: "lastname",
-            message: "What is the employee's last name?",
-        },
-        {
-            type: "input",
-            name: "role",
-            message: "What is the employee's role?",
-        },
-        {
-            type: "input",
-            name: "manager",
-            message: "What is the employee's manager?",
-        },
-    ]).then(function(data) {
-        connection.query(
-            "INSERT INTO employees SET ?", {
-                first_name: data.firstname,
-                last_name: data.lastname,
-                role_id: data.role,
-                manager_id: data.manager,
-            },
-            function(err, res) {
-                if (err) throw err;
-                console.log(`Added ${res.first_name} ${res.last_name} to the database`);
-                // re-prompt the user the first prompt
-                begin();
-            },
-        );
-    });
+
+    connection.query(
+        "SELECT title FROM roles",
+        function(err, res) {
+            if (err) throw err;
+            inquirer.prompt([{
+                    type: "input",
+                    name: "firstname",
+                    message: "What is the employee's first name?",
+                },
+                {
+                    type: "input",
+                    name: "lastname",
+                    message: "What is the employee's last name?",
+                },
+                {
+                    type: "list",
+                    name: "role",
+                    message: "What is the employee's role?",
+                    choices: function() {
+                        let roleArray = [];
+                        for (let i = 0; i < res.length; i++) {
+                            roleArray.push(res[i].title);
+                        }
+                        return roleArray;
+                    },
+                },
+                {
+                    type: "list",
+                    name: "manager",
+                    message: "Who is the employee's manager?",
+                    choices: function() {
+                        let managerArray = [];
+                        for (let i = 0; i < res.length; i++) {
+                            managerArray.push(res[i].title);
+                        }
+                        return managerArray;
+                    },
+                },
+            ]).then(function(data) {
+                connection.query(
+                    "INSERT INTO employees SET ?", {
+                        first_name: data.firstname,
+                        last_name: data.lastname,
+                        role_id: data.role,
+                        manager_id: data.manager,
+                    },
+                    function(err, res) {
+                        if (err) throw err;
+                        console.log(`Added ${res.first_name} ${res.last_name} to the database`);
+                        // re-prompt the user the first prompt
+                        begin();
+                    },
+                );
+            });
+        });
 };
+
+function addDepartment() {
+
+    connection.query("SELECT * FROM departments", (err, res) => {
+        if (err) throw err;
+        for (i = 0; i < res.length; i++) {
+            console.table(`${res[i].department_name}`);
+        }
+        inquirer.prompt({
+            type: "input",
+            name: "department",
+            message: "Add a department:"
+        }).then(function(data) {
+            connection.query(
+                "INSERT INTO departments SET ?", {
+                    department_name: data.department
+                },
+                function(err, res) {
+                    console.log(`Added ${res.department_name} to the database`);
+                    begin();
+                }
+            )
+        })
+    })
+
+}
 
 
 // const DB = {
