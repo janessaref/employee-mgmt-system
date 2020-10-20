@@ -189,36 +189,82 @@ function addEmployee() {
                         return roleArray;
                     },
                 },
-                {
-                    type: "list",
-                    name: "manager",
-                    message: "Who is the employee's manager?",
-                    choices: function() {
-                        let managerArray = [];
-                        for (let i = 0; i < res.length; i++) {
-                            managerArray.push(res[i].title);
-                        }
-                        return managerArray;
-                    },
-                },
             ]).then(function(data) {
-                connection.query(
-                    "INSERT INTO employees SET ?", {
-                        first_name: data.firstname,
-                        last_name: data.lastname,
-                        role_id: data.role,
-                        manager_id: data.manager,
-                    },
-                    function(err, res) {
-                        if (err) throw err;
-                        console.log(`Added ${res.first_name} ${res.last_name} to the database`);
-                        // re-prompt the user the first prompt
-                        begin();
-                    },
-                );
+                let firstName = data.firstname;
+                let lastName = data.lastname;
+                let employeeRole = data.role;
+                employeeManager(firstName, lastName, employeeRole);
+                // connection.query(
+                //     "INSERT INTO employees SET ?", {
+                //         first_name: data.firstname,
+                //         last_name: data.lastname,
+                //         role_id: data.role,
+                //         manager_id: data.manager,
+                //     },
+                //     function(err, res) {
+                //         if (err) throw err;
+                //         console.log(`Added ${res.first_name} ${res.last_name} to the database`);
+                //         // re-prompt the user the first prompt
+                //         begin();
+                //     },
+                // );
             });
         });
 };
+
+function employeeManager(x, y, z) {
+    connection.query("SELECT * FROM employees INNER JOIN roles ON employees.role_id = roles.id", [x, y, z], function(err, res) {
+
+        inquirer.prompt({
+            type: "list",
+            name: "manager",
+            message: "Who is the employee's manager?",
+            choices: function() {
+                let managerArray = [];
+                for (let i = 0; i < res.length; i++) {
+                    if (res[i].manager_id === null) {
+                        managerArray.push(`${res[i].first_name} ${res[i].last_name}`);
+                    }
+                }
+                return managerArray;
+            },
+        }).then(function(data) {
+            let roleId;
+            // console.log(res)
+            // console.log(x, y, z)
+
+            for (let i = 0; i < res.length; i++) {
+                if (res[i].title === z) {
+                    roleId = res[i].id;
+
+                }
+            }
+            let managerId;
+
+            for (let j = 0; j < res.length; j++) {
+                let fullName = res[j].first_name + " " + res[j].last_name;
+                console.log(fullName);
+                if (fullName === data.manager) {
+                    managerId = res[j].id;
+                }
+            }
+            // console.log(managerId)
+
+            connection.query(
+                "INSERT INTO employees SET ?", {
+                    first_name: x,
+                    last_name: y,
+                    role_id: roleId,
+                    manager_id: managerId
+                },
+                function(err, res) {
+                    console.log(`Added Employee to the database`);
+                    begin();
+                }
+            )
+        })
+    })
+}
 
 function addDepartment() {
 
@@ -237,7 +283,7 @@ function addDepartment() {
                     department_name: data.department
                 },
                 function(err, res) {
-                    console.log(`Added ${res.department_name} to the database`);
+                    console.log(`Added ${res} to the database`);
                     begin();
                 }
             )
