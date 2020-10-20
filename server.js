@@ -360,6 +360,22 @@ function roleDepartment(role, salary) {
     })
 }
 
+function rolesTable() {
+    connection.query(
+        `
+        SELECT
+        id AS ID, 
+        title AS Title,
+        salary AS Salary
+
+       FROM roles
+        `,
+        function(err, res) {
+            if (err) throw err;
+            console.table(res);
+            return res;
+        })
+}
 
 // const DB = {
 //     findAllEmployees() {
