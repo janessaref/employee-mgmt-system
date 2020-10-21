@@ -4,7 +4,7 @@ In this project, I created an employee tracker that allows users to view, store 
 
 The user will be prompted questions using node and I have used the Inquirer package for those prompts as well as MySQL where the information will be stored into a database.
 
-This was a challenging project because there are so many things to consider and I felt I could've done more and finish all the bonus points if I was given more time however, I was able to complete the basic functionality. I was challenged on pulling information from the database from different tables and did a ton of trial and errors to get the responses. I did something different, I've realized as a user, when adding a new employee with the employee's first name, last name, role and manager, I have realized that the managers names are not enough information as a user to let me know what department the manager is from and so when prompted "Who is the employee's manager?", I display a table with the list of employees and departments so that the user can use it as a reference that as an Accoutant, the new employee should be under the Accounts Manager in the accounting department. I wanted the user's experience to be easier in that way.
+This was a challenging project because there are so many things to consider and I felt I could've done more and finish all the bonus points if I was given more time however, I was able to complete the basic functionality. I was challenged on pulling information from the database from different tables and did a ton of trial and errors to get the responses. I did something different, I've realized as a user, when adding a new employee with the employee's first name, last name, role and manager, I have realized that the managers names are not enough information as a user to let me know what department the manager is from and so when prompted "Who is the employee's manager?", I display a table with the list of employees and departments so that the user can use it as a reference that as an Accoutant, the new employee should be under the Accounts Manager in the accounting department. I wanted the user's experience to be easier in that way. I've added a demonstration video at the Deployed Link section for the user to know how this application works.
 
 ## Table of Contents
 
@@ -12,6 +12,7 @@ This was a challenging project because there are so many things to consider and 
 * [GIF of Project](#gif-of-project)
 * [Image of Project](#image-of-project)
 * [Code Snippet](#code-snippet)
+* [Deployed Link](#deployed-link)
 * [Authors](#authors)
 * [License](#license)
 * [Acknowledgments](#acknowledgments)
@@ -88,6 +89,10 @@ function updateRole() {
                 };
             };
 ```
+
+## Deployed Link
+
+* [See Demo Here](https://drive.google.com/drive/folders/1mQNeXum_T7GY37Vph9GAhvHZFubbTvd3?usp=sharing)
 
 ## Authors
 
