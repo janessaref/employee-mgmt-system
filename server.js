@@ -226,7 +226,7 @@ function employeeManager(first, last, role) {
             let managerId;
             for (let j = 0; j < res.length; j++) {
                 let fullName = res[j].first_name + " " + res[j].last_name;
-                console.log(fullName);
+
                 if (fullName === data.manager) {
                     managerId = res[j].id;
                 } else if (data.manager === "I am the Manager") {
@@ -241,7 +241,9 @@ function employeeManager(first, last, role) {
                     role_id: roleId,
                     manager_id: managerId
                 },
+                console.log(chalk.yellow(`Added employee ${first} ${last} to the database!`)),
                 function(err, res) {
+                    if (err) throw err;
                     return res;
                 });
             begin();
@@ -264,7 +266,7 @@ function addDepartment() {
                 "INSERT INTO departments SET ?", {
                     department_name: data.department
                 },
-                console.log(chalk.yellow(`Added ${data.department} to the database!`)),
+                console.log(chalk.yellow(`Added ${data.department} Department to the database!`)),
                 function(err, res) {
                     if (err) throw err;
                     return res;
@@ -292,15 +294,6 @@ function addRole() {
             let newRole = data.role;
             let newSalary = data.salary;
             roleDepartment(newRole, newSalary);
-            // connection.query(
-            //     "INSERT INTO roles SET ?", {
-            //         title: data.role
-            //     },
-            //     function(err, res) {
-            //         console.log(`Added ${res.title} to the database`);
-            //         begin();
-            //     }
-            // )
         });
     });
 };
@@ -332,7 +325,7 @@ function roleDepartment(role, salary) {
                     salary: salary,
                     department_id: deptId
                 },
-                console.log(`Added ${role} to the database!`),
+                console.log(chalk.yellow(`Added new role ${role} to the database!`)),
                 function(err, res) {
                     if (err) throw err;
                     return res;
@@ -419,38 +412,55 @@ function updateRole() {
     });
 };
 
-// const DB = {
-//     findAllEmployees() {
-//         connection.query(
-//             `
-//             SELECT * FROM employees
-//             `,
-//             function(err, res) {
-//                 if (err) throw err;
-//                 console.log(res);
-//                 return res;
-//             })
-//     },
-// }
-
-// findAllEmployees() {
-//     return connection.query(
-//         `
-//         SELECT
-//             e.id, 
-//             e.first_name AS First,
-//             e.last_name AS Last,
-//             r.title AS Title,
-//             d.department_name AS Department,
-//             r.salary AS Salary,
-//             CONCAT(m.first_name, " ",m.last_name) AS Manager
+function removeEmployee() {
+    connection.query(`
+    SELECT
+       e.id, 
+       e.first_name AS First,
+       e.last_name AS Last,
+       r.title AS Title,
+       d.department_name AS Department,
+       r.salary AS Salary,
+       CONCAT(m.first_name, " ",m.last_name) AS Manager
 
 
-//         FROM employees e 
-//         LEFT JOIN roles r ON e.role_id = r.id
-//         LEFT JOIN departments d ON r.department_id = d.id
-//         LEFT JOIN employees m ON e.manager_id = m.id
-//         ORDER BY e.id
-//         `
-//     )
-// },
+   FROM employees e 
+   LEFT JOIN roles r ON e.role_id = r.id
+   LEFT JOIN departments d ON r.department_id = d.id
+   LEFT JOIN employees m ON e.manager_id = m.id
+   ORDER BY e.id
+   `, function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        inquirer.prompt([{
+            type: "list",
+            name: "employee",
+            message: "Select an employee to remove",
+            choices: function() {
+                let employeeArray = [];
+                for (let i = 0; i < res.length; i++) {
+                    employeeArray.push(`${res[i].First} ${res[i].Last}`);
+                };
+                return employeeArray;
+            },
+        }, ]).then((data) => {
+            let name = data.employee.split(" ");
+
+            let removefirstName = name[0];
+            let removelastName = name[1];
+
+            connection.query("DELETE FROM employees WHERE ? AND ?", [{
+                    first_name: removefirstName,
+
+                }, {
+                    last_name: removelastName
+                }],
+                console.log(chalk.yellow(`Employee ${removefirstName} ${removelastName} role has been removed`)),
+                (err, res) => {
+                    if (err) throw err;
+                    return res;
+                });
+            begin();
+        });
+    });
+};
