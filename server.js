@@ -37,8 +37,7 @@ Steps to create:
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const consoletable = require("console.table");
-const { left } = require("inquirer/lib/utils/readline");
-const { connect } = require("http2");
+const chalk = require("chalk");
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -194,27 +193,13 @@ function addEmployee() {
                 let lastName = data.lastname;
                 let employeeRole = data.role;
                 employeeManager(firstName, lastName, employeeRole);
-                // connection.query(
-                //     "INSERT INTO employees SET ?", {
-                //         first_name: data.firstname,
-                //         last_name: data.lastname,
-                //         role_id: data.role,
-                //         manager_id: data.manager,
-                //     },
-                //     function(err, res) {
-                //         if (err) throw err;
-                //         console.log(`Added ${res.first_name} ${res.last_name} to the database`);
-                //         // re-prompt the user the first prompt
-                //         begin();
-                //     },
-                // );
             });
         });
 };
 
 
 function employeeManager(first, last, role) {
-    connection.query("SELECT * FROM employees INNER JOIN roles ON employees.role_id = roles.id", [first, last, role], function(err, res) {
+    connection.query("SELECT * FROM employees LEFT JOIN roles ON employees.role_id = roles.id ORDER BY employees.id", [first, last, role], function(err, res) {
         console.table(res);
 
         inquirer.prompt({
@@ -222,7 +207,7 @@ function employeeManager(first, last, role) {
             name: "manager",
             message: "Who is the employee's manager?",
             choices: function() {
-                let managerArray = [];
+                let managerArray = ["I am the Manager"];
                 for (let i = 0; i < res.length; i++) {
                     if (res[i].manager_id === null) {
                         managerArray.push(`${res[i].first_name} ${res[i].last_name}`);
@@ -244,6 +229,8 @@ function employeeManager(first, last, role) {
                 console.log(fullName);
                 if (fullName === data.manager) {
                     managerId = res[j].id;
+                } else if (data.manager === "I am the Manager") {
+                    managerId = null;
                 };
             };
 
@@ -255,9 +242,9 @@ function employeeManager(first, last, role) {
                     manager_id: managerId
                 },
                 function(err, res) {
-                    console.log(`Added Employee to the database`);
-                    begin();
+                    return res;
                 });
+            begin();
         });
     });
 };
@@ -277,10 +264,12 @@ function addDepartment() {
                 "INSERT INTO departments SET ?", {
                     department_name: data.department
                 },
+                console.log(chalk.yellow(`Added ${data.department} to the database!`)),
                 function(err, res) {
-                    console.log(`Added ${res} to the database`);
-                    begin();
+                    if (err) throw err;
+                    return res;
                 });
+            begin();
         });
     });
 };
@@ -343,10 +332,12 @@ function roleDepartment(role, salary) {
                     salary: salary,
                     department_id: deptId
                 },
+                console.log(`Added ${role} to the database!`),
                 function(err, res) {
-                    console.log(`Added ${res.title} to the database`);
-                    begin();
+                    if (err) throw err;
+                    return res;
                 });
+            begin();
         });
     });
 };
@@ -372,7 +363,7 @@ function rolesTable() {
 function updateRole() {
     connection.query("SELECT first_name AS First, last_name AS Last, title AS Title, role_id AS Role_ID FROM employees LEFT JOIN roles ON employees.role_id = roles.id", function(err, res) {
         if (err) throw err;
-        // console.log(res)
+        console.table(res);
         inquirer.prompt([{
                 type: "list",
                 name: "employee",
@@ -381,7 +372,6 @@ function updateRole() {
                     let employeeArray = [];
                     for (let i = 0; i < res.length; i++) {
                         employeeArray.push(`${res[i].First} ${res[i].Last}`);
-                        console.table(res);
                     };
                     return employeeArray;
                 },
@@ -394,26 +384,35 @@ function updateRole() {
                     let roleArray = [];
                     for (let i = 0; i < res.length; i++) {
                         roleArray.push(res[i].Title);
-                        console.table(`${res[i].First} | ${res[i].Title}`);
                     };
                     return roleArray;
                 },
             },
-        ]).then(function(data) {
+        ]).then((data) => {
+            let name = data.employee.split(" ");
+
+            let employeefirstName = name[0];
+            let employeelastName = name[1];
+
             let updateroleId;
             for (let i = 0; i < res.length; i++) {
                 if (res[i].Title === data.updaterole) {
-                    updateroleId = res[i].id;
+                    updateroleId = res[i].Role_ID;
                 };
             };
-            connection.query("UPDATE employees INNER JOIN roles ON (employees.role_id = roles.id) SET employees.role_id = roles.id", {
+
+            connection.query("UPDATE employees SET ? WHERE ? AND ?", [{
                     role_id: updateroleId,
-                },
+                }, {
+                    first_name: employeefirstName,
+
+                }, {
+                    last_name: employeelastName
+                }],
+                console.log(chalk.yellow(`Employee ${employeefirstName} ${employeelastName} role has been updated!`)),
                 (err, res) => {
                     if (err) throw err;
-                    console.table(`Employee ${res.First} ${res.Last} role has been updated! `);
                     return res;
-
                 });
             begin();
         });
