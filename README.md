@@ -32,7 +32,7 @@ This was a challenging project because there are so many things to consider and 
 
 ## Images of Project
 
-Attached below is a picture of the application at the main page and the notes page.
+Attached below is an sample image of the application.
 
 ![pic](assets/employeetrackerimg.png)
 
